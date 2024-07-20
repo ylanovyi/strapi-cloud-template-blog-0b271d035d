@@ -512,6 +512,12 @@ export interface PluginContentReleasesRelease extends Schema.CollectionType {
   attributes: {
     name: Attribute.String & Attribute.Required;
     releasedAt: Attribute.DateTime;
+    scheduledAt: Attribute.DateTime;
+    timezone: Attribute.String;
+    status: Attribute.Enumeration<
+      ['ready', 'blocked', 'failed', 'done', 'empty']
+    > &
+      Attribute.Required;
     actions: Attribute.Relation<
       'plugin::content-releases.release',
       'oneToMany',
@@ -566,6 +572,7 @@ export interface PluginContentReleasesReleaseAction
       'manyToOne',
       'plugin::content-releases.release'
     >;
+    isEntryValid: Attribute.Boolean;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<
@@ -781,71 +788,76 @@ export interface PluginI18NLocale extends Schema.CollectionType {
   };
 }
 
-export interface ApiAboutAbout extends Schema.SingleType {
-  collectionName: 'abouts';
-  info: {
-    singularName: 'about';
-    pluralName: 'abouts';
-    displayName: 'About';
-    description: 'Write about yourself and the content you create';
-  };
-  options: {
-    draftAndPublish: false;
-  };
-  attributes: {
-    title: Attribute.String;
-    blocks: Attribute.DynamicZone<
-      ['shared.media', 'shared.quote', 'shared.rich-text', 'shared.slider']
-    >;
-    createdAt: Attribute.DateTime;
-    updatedAt: Attribute.DateTime;
-    createdBy: Attribute.Relation<
-      'api::about.about',
-      'oneToOne',
-      'admin::user'
-    > &
-      Attribute.Private;
-    updatedBy: Attribute.Relation<
-      'api::about.about',
-      'oneToOne',
-      'admin::user'
-    > &
-      Attribute.Private;
-  };
-}
-
 export interface ApiArticleArticle extends Schema.CollectionType {
   collectionName: 'articles';
   info: {
     singularName: 'article';
     pluralName: 'articles';
     displayName: 'Article';
-    description: 'Create your blog content';
+    description: '';
   };
   options: {
     draftAndPublish: true;
   };
+  pluginOptions: {
+    i18n: {
+      localized: true;
+    };
+  };
   attributes: {
-    title: Attribute.String;
-    description: Attribute.Text &
-      Attribute.SetMinMaxLength<{
-        maxLength: 80;
+    Preview: Attribute.Media &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: false;
+        };
       }>;
-    slug: Attribute.UID<'api::article.article', 'title'>;
-    cover: Attribute.Media;
-    author: Attribute.Relation<
+    Description: Attribute.Text &
+      Attribute.Required &
+      Attribute.Unique &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }> &
+      Attribute.SetMinMaxLength<{
+        minLength: 50;
+        maxLength: 180;
+      }>;
+    Title: Attribute.String &
+      Attribute.Required &
+      Attribute.Unique &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }> &
+      Attribute.SetMinMaxLength<{
+        minLength: 5;
+        maxLength: 50;
+      }>;
+    TimeToRead: Attribute.Integer &
+      Attribute.Required &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    Authors: Attribute.Relation<
       'api::article.article',
-      'manyToOne',
+      'oneToMany',
       'api::author.author'
     >;
-    category: Attribute.Relation<
+    Categories: Attribute.Relation<
       'api::article.article',
-      'manyToOne',
+      'oneToMany',
       'api::category.category'
     >;
-    blocks: Attribute.DynamicZone<
-      ['shared.media', 'shared.quote', 'shared.rich-text', 'shared.slider']
-    >;
+    Blocks: Attribute.DynamicZone<['shared.rich-text', 'shared.media']> &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;
@@ -861,6 +873,12 @@ export interface ApiArticleArticle extends Schema.CollectionType {
       'admin::user'
     > &
       Attribute.Private;
+    localizations: Attribute.Relation<
+      'api::article.article',
+      'oneToMany',
+      'api::article.article'
+    >;
+    locale: Attribute.String;
   };
 }
 
@@ -879,11 +897,7 @@ export interface ApiAuthorAuthor extends Schema.CollectionType {
     name: Attribute.String;
     avatar: Attribute.Media;
     email: Attribute.String;
-    articles: Attribute.Relation<
-      'api::author.author',
-      'oneToMany',
-      'api::article.article'
-    >;
+    Position: Attribute.String & Attribute.Required & Attribute.Unique;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<
@@ -915,11 +929,6 @@ export interface ApiCategoryCategory extends Schema.CollectionType {
   attributes: {
     name: Attribute.String;
     slug: Attribute.UID;
-    articles: Attribute.Relation<
-      'api::category.category',
-      'oneToMany',
-      'api::article.article'
-    >;
     description: Attribute.Text;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
@@ -938,36 +947,58 @@ export interface ApiCategoryCategory extends Schema.CollectionType {
   };
 }
 
-export interface ApiGlobalGlobal extends Schema.SingleType {
-  collectionName: 'globals';
+export interface ApiOpenPositionOpenPosition extends Schema.CollectionType {
+  collectionName: 'open_positions';
   info: {
-    singularName: 'global';
-    pluralName: 'globals';
-    displayName: 'Global';
-    description: 'Define global settings';
+    singularName: 'open-position';
+    pluralName: 'open-positions';
+    displayName: 'Open Position';
   };
   options: {
-    draftAndPublish: false;
+    draftAndPublish: true;
+  };
+  pluginOptions: {
+    i18n: {
+      localized: true;
+    };
   };
   attributes: {
-    siteName: Attribute.String & Attribute.Required;
-    favicon: Attribute.Media;
-    siteDescription: Attribute.Text & Attribute.Required;
-    defaultSeo: Attribute.Component<'shared.seo'>;
+    Title: Attribute.String &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    Description: Attribute.RichText &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }> &
+      Attribute.SetMinMaxLength<{
+        minLength: 30;
+      }>;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
+    publishedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<
-      'api::global.global',
+      'api::open-position.open-position',
       'oneToOne',
       'admin::user'
     > &
       Attribute.Private;
     updatedBy: Attribute.Relation<
-      'api::global.global',
+      'api::open-position.open-position',
       'oneToOne',
       'admin::user'
     > &
       Attribute.Private;
+    localizations: Attribute.Relation<
+      'api::open-position.open-position',
+      'oneToMany',
+      'api::open-position.open-position'
+    >;
+    locale: Attribute.String;
   };
 }
 
@@ -989,11 +1020,10 @@ declare module '@strapi/types' {
       'plugin::users-permissions.role': PluginUsersPermissionsRole;
       'plugin::users-permissions.user': PluginUsersPermissionsUser;
       'plugin::i18n.locale': PluginI18NLocale;
-      'api::about.about': ApiAboutAbout;
       'api::article.article': ApiArticleArticle;
       'api::author.author': ApiAuthorAuthor;
       'api::category.category': ApiCategoryCategory;
-      'api::global.global': ApiGlobalGlobal;
+      'api::open-position.open-position': ApiOpenPositionOpenPosition;
     }
   }
 }

@@ -1,0 +1,36 @@
+{
+  "kind": "collectionType",
+  "collectionName": "open_positions",
+  "info": {
+    "singularName": "open-position",
+    "pluralName": "open-positions",
+    "displayName": "Open Position"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {
+    "i18n": {
+      "localized": true
+    }
+  },
+  "attributes": {
+    "Title": {
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "type": "string"
+    },
+    "Description": {
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "type": "richtext",
+      "minLength": 30
+    }
+  }
+}

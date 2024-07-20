@@ -28,11 +28,10 @@
     "email": {
       "type": "string"
     },
-    "articles": {
-      "type": "relation",
-      "relation": "oneToMany",
-      "target": "api::article.article",
-      "mappedBy": "author"
+    "Position": {
+      "type": "string",
+      "required": true,
+      "unique": true
     }
   }
 }

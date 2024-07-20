@@ -5,53 +5,86 @@
     "singularName": "article",
     "pluralName": "articles",
     "displayName": "Article",
-    "description": "Create your blog content"
+    "description": ""
   },
   "options": {
     "draftAndPublish": true
   },
-  "pluginOptions": {},
+  "pluginOptions": {
+    "i18n": {
+      "localized": true
+    }
+  },
   "attributes": {
-    "title": {
-      "type": "string"
-    },
-    "description": {
-      "type": "text",
-      "maxLength": 80
-    },
-    "slug": {
-      "type": "uid",
-      "targetField": "title"
-    },
-    "cover": {
+    "Preview": {
       "type": "media",
       "multiple": false,
       "required": false,
       "allowedTypes": [
         "images",
         "files",
-        "videos"
-      ]
+        "videos",
+        "audios"
+      ],
+      "pluginOptions": {
+        "i18n": {
+          "localized": false
+        }
+      }
     },
-    "author": {
+    "Description": {
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "type": "text",
+      "unique": true,
+      "minLength": 50,
+      "maxLength": 180,
+      "required": true
+    },
+    "Title": {
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "type": "string",
+      "required": true,
+      "unique": true,
+      "minLength": 5,
+      "maxLength": 50
+    },
+    "TimeToRead": {
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "type": "integer",
+      "required": true
+    },
+    "Authors": {
       "type": "relation",
-      "relation": "manyToOne",
-      "target": "api::author.author",
-      "inversedBy": "articles"
+      "relation": "oneToMany",
+      "target": "api::author.author"
     },
-    "category": {
+    "Categories": {
       "type": "relation",
-      "relation": "manyToOne",
-      "target": "api::category.category",
-      "inversedBy": "articles"
+      "relation": "oneToMany",
+      "target": "api::category.category"
     },
-    "blocks": {
+    "Blocks": {
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
       "type": "dynamiczone",
       "components": [
-        "shared.media",
-        "shared.quote",
         "shared.rich-text",
-        "shared.slider"
+        "shared.media"
       ]
     }
   }
