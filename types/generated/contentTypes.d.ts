@@ -818,10 +818,6 @@ export interface ApiArticleArticle extends Schema.CollectionType {
         i18n: {
           localized: true;
         };
-      }> &
-      Attribute.SetMinMaxLength<{
-        minLength: 50;
-        maxLength: 180;
       }>;
     Title: Attribute.String &
       Attribute.Required &
@@ -830,10 +826,6 @@ export interface ApiArticleArticle extends Schema.CollectionType {
         i18n: {
           localized: true;
         };
-      }> &
-      Attribute.SetMinMaxLength<{
-        minLength: 5;
-        maxLength: 50;
       }>;
     TimeToRead: Attribute.Integer &
       Attribute.Required &

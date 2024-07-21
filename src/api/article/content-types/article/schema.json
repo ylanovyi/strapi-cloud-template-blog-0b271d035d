@@ -40,8 +40,6 @@
       },
       "type": "text",
       "unique": true,
-      "minLength": 50,
-      "maxLength": 180,
       "required": true
     },
     "Title": {
@@ -52,9 +50,7 @@
       },
       "type": "string",
       "required": true,
-      "unique": true,
-      "minLength": 5,
-      "maxLength": 50
+      "unique": true
     },
     "TimeToRead": {
       "pluginOptions": {
