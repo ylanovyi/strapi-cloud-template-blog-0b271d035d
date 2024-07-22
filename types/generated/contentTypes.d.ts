@@ -939,12 +939,43 @@ export interface ApiCategoryCategory extends Schema.CollectionType {
   };
 }
 
+export interface ApiDepartmentDepartment extends Schema.CollectionType {
+  collectionName: 'departments';
+  info: {
+    singularName: 'department';
+    pluralName: 'departments';
+    displayName: 'Department';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    Name: Attribute.String;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    publishedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::department.department',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'api::department.department',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+  };
+}
+
 export interface ApiOpenPositionOpenPosition extends Schema.CollectionType {
   collectionName: 'open_positions';
   info: {
     singularName: 'open-position';
     pluralName: 'open-positions';
     displayName: 'Open Position';
+    description: '';
   };
   options: {
     draftAndPublish: true;
@@ -970,6 +1001,11 @@ export interface ApiOpenPositionOpenPosition extends Schema.CollectionType {
       Attribute.SetMinMaxLength<{
         minLength: 30;
       }>;
+    department: Attribute.Relation<
+      'api::open-position.open-position',
+      'oneToOne',
+      'api::department.department'
+    >;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;
@@ -1015,6 +1051,7 @@ declare module '@strapi/types' {
       'api::article.article': ApiArticleArticle;
       'api::author.author': ApiAuthorAuthor;
       'api::category.category': ApiCategoryCategory;
+      'api::department.department': ApiDepartmentDepartment;
       'api::open-position.open-position': ApiOpenPositionOpenPosition;
     }
   }

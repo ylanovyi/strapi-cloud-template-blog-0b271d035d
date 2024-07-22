@@ -4,7 +4,8 @@
   "info": {
     "singularName": "open-position",
     "pluralName": "open-positions",
-    "displayName": "Open Position"
+    "displayName": "Open Position",
+    "description": ""
   },
   "options": {
     "draftAndPublish": true
@@ -31,6 +32,11 @@
       },
       "type": "richtext",
       "minLength": 30
+    },
+    "department": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::department.department"
     }
   }
 }
